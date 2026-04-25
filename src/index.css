@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+
+.btn-primary {
+  @apply bg-blue-500 text-white hover:bg-blue-800 active:scale-95 rounded-lg p-2;
+}
