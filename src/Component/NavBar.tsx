@@ -2,6 +2,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Menu } from 'lucide-react';
 import { useState } from 'react';
 import { isSignedUp } from '../Hooks/Authen';
+import LOGO1 from "../assets/LOGO1.png"
 
 export const NavBar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -18,7 +19,7 @@ export const NavBar = () => {
     return (
         <nav className='sticky top-0 z-50 bg-white border-b border-gray-200 py-3 px-6 flex items-center justify-between w-full'>
 
-            <Link to="/" className='font-bold text-blue-700 text-xl'>MMC</Link>
+            <Link to="/" className='font-bold text-blue-700 text-xl'><img src={LOGO1} alt="" className='w-25'/></Link>
 
             {/* Desktop Nav Links */}
             <div className='hidden md:flex items-center gap-6'>

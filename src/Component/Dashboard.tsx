@@ -1,14 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { getUser } from "../Hooks/Authen";
-import {
-    Heart,
-    ShoppingCart,
-    LogOut,
-    Search,
-    SlidersHorizontal,
-} from "lucide-react";
+
+import { ShoppingCart, LogOut, Search, SlidersHorizontal, } from "lucide-react";
 import { useState, useMemo } from "react";
 import { products, type Product } from "../Data/Product";
+import LOGO1 from "../assets/LOGO1.png"
 import Footer from "./Footer";
 
 const Dashboard = () => {
@@ -93,7 +89,7 @@ const Dashboard = () => {
                 <div className="min-h-screen bg-gray-50">
                     {/* Navbar */}
                     <nav className="bg-white shadow-sm px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-                        <span className="font-extrabold text-blue-700 text-xl">MMC</span>
+                         <Link to="/" className='font-bold text-blue-700 text-xl'><img src={LOGO1} alt="" className='w-25'/></Link>
 
                         {/* Nav Links */}
                         <div className="hidden sm:flex items-center font-bold gap-6 text-sm  text-black">
