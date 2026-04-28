@@ -8,7 +8,7 @@ import {
     BadgeCheck,
     MessageCircle,
 } from "lucide-react";
-import baggy2 from "../assets/baggy2.jfif";
+import Baggy2 from "../assets/Baggy2.jfif";
 import Bralette from "../assets/Bralette.jfif";
 import Hoodie from "../assets/Hoodie.jfif";
 import Jersey2 from "../assets/Jersey2.jpg";
@@ -20,7 +20,7 @@ const previewItems = [
         name: "Unisex Baggy Jeans",
         price: 7000,
         originalPrice: 8000,
-        image: baggy2,
+        image: Baggy2,
         condition: "Like New",
         category: "Unisex",
     },
@@ -71,7 +71,10 @@ export const Cards = () => {
             </p>
 
             {/* Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto"  id="collections" >
+            <div
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto"
+                id="collections"
+            >
                 {previewItems.map((p) => (
                     <div
                         key={p.id}

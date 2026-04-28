@@ -98,14 +98,6 @@ const Footer = () => {
                                     About Us
                                 </button>
                             </li>
-                            <li>
-                                <button
-                                    onClick={() => navigate("/contact")}
-                                    className="text-sm hover:text-white transition-colors"
-                                >
-                                    Contact
-                                </button>
-                            </li>
                         </ul>
                     </div>
 
@@ -114,7 +106,7 @@ const Footer = () => {
                         <h3 className="text-white font-bold text-sm uppercase tracking-widest mb-5">
                             Follow Us
                         </h3>
-                        <div className="flex flex-col gap-3">
+                        <div className="flex flex-col gap-3 ">
                             <a
                                 href=""
                                 target="_blank"
