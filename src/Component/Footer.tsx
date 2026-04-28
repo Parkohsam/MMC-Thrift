@@ -58,7 +58,7 @@ const Footer = () => {
                             Join our WhatsApp Community
                         </a>
                         <a
-                            href="https://chat.whatsapp.com/EclRb7OwPqzEeE3Xdg8mt2"
+                            href="https://wa.me/message/7PSNBVQOYAMSL1"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-2 text-green-400 hover:text-green-300 transition-colors text-sm font-semibold"
