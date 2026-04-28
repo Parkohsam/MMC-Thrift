@@ -48,7 +48,7 @@ export const Home = () => {
 
             <div className="text-center py-8 px-4 bg-gray-200">
                 <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-4">Shop by Category</h2>
-                <p className="text-sm md:text-2xl font-bold text-gray-900 mt-4">
+                <p className="text-sm md:text-2xl font-bold text-black mt-4">
                     Explore our latest thrift wears for men and women — quality pieces at unbeatable prices.
                 </p>
             </div>
