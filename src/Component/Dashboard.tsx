@@ -1,22 +1,15 @@
 import { useNavigate, Link } from "react-router-dom";
-import { getUser } from "../Hooks/Authen";
-
-import { ShoppingCart, LogOut, Search, SlidersHorizontal, } from "lucide-react";
+import { ShoppingCart, LogOut, Search, SlidersHorizontal } from "lucide-react";
 import { useState, useMemo } from "react";
 import { products, type Product } from "../Data/Product";
-import LOGO1 from "../assets/LOGO1.png"
+import LOGO1 from "../assets/LOGO1.png";
 import Footer from "./Footer";
 
 const Dashboard = () => {
-    const user = getUser();
     const navigate = useNavigate();
 
     // UI state
-    const [wished, setWished] = useState<string[]>([]);
-    const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>(
-        {},
-    );
-    const [cartAdded, setCartAdded] = useState<string | null>(null);
+    const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
 
     // Filter & search state
     const [search, setSearch] = useState("");
@@ -30,7 +23,7 @@ const Dashboard = () => {
         navigate("/");
     };
 
-    const WHATSAPP_NUMBER = "2347018703451"; // 👈 replace with your WhatsApp number (with country code, no + or spaces)
+    const WHATSAPP_NUMBER = "2347018703451";
 
     const handleAddToCart = (id: string) => {
         if (!selectedSizes[id]) {
@@ -42,41 +35,30 @@ const Dashboard = () => {
         if (!product) return;
 
         const message = `Hello MMC! 
-        I'd like to order the following:
+I'd like to order the following:
 
-        Product: ${product.name}
-        Size: ${selectedSizes[id]}
-        Price: ₦${product.price.toLocaleString()}
-        Condition: ${product.condition}
+Product: ${product.name}
+Size: ${selectedSizes[id]}
+Price: ₦${product.price.toLocaleString()}
+Condition: ${product.condition}
 
-        Please confirm availability. Thank you!`;
+Please confirm availability. Thank you!`;
 
         const encodedMessage = encodeURIComponent(message);
         const whatsappURL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
-
         window.open(whatsappURL, "_blank");
-    };
-
-    const toggleWish = (id: string) => {
-        setWished((prev) =>
-            prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
-        );
     };
 
     // Filtered + sorted products
     const filtered = useMemo(() => {
         return products
             .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
-            .filter((p) =>
-                categoryFilter === "All" ? true : p.category === categoryFilter,
-            )
-            .filter((p) =>
-                conditionFilter === "All" ? true : p.condition === conditionFilter,
-            )
+            .filter((p) => categoryFilter === "All" ? true : p.category === categoryFilter)
+            .filter((p) => conditionFilter === "All" ? true : p.condition === conditionFilter)
             .sort((a, b) => {
                 if (sortBy === "price-asc") return a.price - b.price;
                 if (sortBy === "price-desc") return b.price - a.price;
-                return 0; // newest = original order
+                return 0;
             });
     }, [search, categoryFilter, conditionFilter, sortBy]);
 
@@ -87,30 +69,25 @@ const Dashboard = () => {
         <div className="flex flex-col min-h-screen">
             <div className="flex-1">
                 <div className="min-h-screen bg-gray-50">
+
                     {/* Navbar */}
                     <nav className="bg-white shadow-sm px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-                         <Link to="/" className='font-bold text-blue-700 text-xl'><img src={LOGO1} alt="" className='w-25'/></Link>
+                        <Link to="/">
+                            <img src={LOGO1} alt="MMC Logo" className="w-25" />
+                        </Link>
 
-                        {/* Nav Links */}
-                        <div className="hidden sm:flex items-center font-bold gap-6 text-sm  text-black">
-                            <button
-                                onClick={() => navigate("/")}
-                                className="hover:text-blue-600 transition-colors"
-                            >
+                        <div className="hidden sm:flex items-center font-bold gap-6 text-sm text-black">
+                            <button onClick={() => navigate("/")} className="hover:text-blue-600 transition-colors">
                                 Home
                             </button>
-                            <button
-                                onClick={() => navigate("/dashboard")}
-                                className="hover:text-blue-600 transition-colors"
-                            >
+                            <button onClick={() => navigate("/")} className="hover:text-blue-600 transition-colors">
                                 About
                             </button>
-                            <button className="hover:text-blue-600 transition-colors">
+                            <button onClick={() => navigate("/")} className="hover:text-blue-600 transition-colors">
                                 Contact
                             </button>
                         </div>
 
-                        {/* Right side */}
                         <div className="flex items-center gap-4">
                             <button
                                 onClick={handleLogout}
@@ -122,14 +99,11 @@ const Dashboard = () => {
                     </nav>
 
                     <div className="max-w-6xl mx-auto px-6 py-8">
+
                         {/* Search + Filter Bar */}
                         <div className="flex flex-col sm:flex-row gap-3 mb-6">
-                            {/* Search */}
                             <div className="relative flex-1">
-                                <Search
-                                    size={15}
-                                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                                />
+                                <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                                 <input
                                     type="text"
                                     placeholder="Search products..."
@@ -139,7 +113,6 @@ const Dashboard = () => {
                                 />
                             </div>
 
-                            {/* Sort */}
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
@@ -150,7 +123,6 @@ const Dashboard = () => {
                                 <option value="price-desc">Price: High to Low</option>
                             </select>
 
-                            {/* Filter toggle (mobile) */}
                             <button
                                 onClick={() => setShowFilters(!showFilters)}
                                 className="flex items-center gap-2 border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white sm:hidden"
@@ -160,21 +132,16 @@ const Dashboard = () => {
                         </div>
 
                         {/* Filter Pills */}
-                        <div
-                            className={`flex flex-wrap gap-3 mb-6 ${showFilters ? "flex" : "hidden sm:flex"}`}
-                        >
-                            {/* Category */}
+                        <div className={`flex flex-wrap gap-3 mb-6 ${showFilters ? "flex" : "hidden sm:flex"}`}>
                             <div className="flex items-center gap-2 flex-wrap">
-                                <span className="text-xs text-gray-400 font-semibold uppercase tracking-wide">
-                                    Category:
-                                </span>
+                                <span className="text-xs text-gray-400 font-semibold uppercase tracking-wide">Category:</span>
                                 {["All", "Men", "Women", "Unisex"].map((c) => (
                                     <button
                                         key={c}
                                         onClick={() => setCategoryFilter(c)}
                                         className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${categoryFilter === c
-                                            ? "bg-blue-600 text-white border-blue-600"
-                                            : "bg-white text-gray-600 border-gray-200 hover:border-blue-400"
+                                                ? "bg-blue-600 text-white border-blue-600"
+                                                : "bg-white text-gray-600 border-gray-200 hover:border-blue-400"
                                             }`}
                                     >
                                         {c}
@@ -182,18 +149,15 @@ const Dashboard = () => {
                                 ))}
                             </div>
 
-                            {/* Condition */}
                             <div className="flex items-center gap-2 flex-wrap">
-                                <span className="text-xs text-gray-400 font-semibold uppercase tracking-wide">
-                                    Condition:
-                                </span>
+                                <span className="text-xs text-gray-400 font-semibold uppercase tracking-wide">Condition:</span>
                                 {["All", "Like New", "Good", "Fair"].map((c) => (
                                     <button
                                         key={c}
                                         onClick={() => setConditionFilter(c)}
                                         className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${conditionFilter === c
-                                            ? "bg-blue-600 text-white border-blue-600"
-                                            : "bg-white text-gray-600 border-gray-200 hover:border-blue-400"
+                                                ? "bg-blue-600 text-white border-blue-600"
+                                                : "bg-white text-gray-600 border-gray-200 hover:border-blue-400"
                                             }`}
                                     >
                                         {c}
@@ -204,10 +168,8 @@ const Dashboard = () => {
 
                         {/* Result count */}
                         <p className="text-sm text-gray-400 mb-5">
-                            Showing{" "}
-                            <strong className="text-gray-700">{filtered.length}</strong> of{" "}
-                            <strong className="text-gray-700">{products.length}</strong>{" "}
-                            products
+                            Showing <strong className="text-gray-700">{filtered.length}</strong> of{" "}
+                            <strong className="text-gray-700">{products.length}</strong> products
                         </p>
 
                         {/* Products Grid */}
@@ -225,21 +187,33 @@ const Dashboard = () => {
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
 
-                                        {/* Condition */}
-                                        <div>
-                                            <span className="absolute top-2 right-10 text-xs font-semibold px-2 py-0.5 bg-white/90 rounded text-gray-700">
-                                                {p.condition}
-                                            </span>
-
-
+                                        {/* Badges */}
+                                        <div className="absolute top-2 left-2 flex flex-col gap-1">
+                                            {p.badge === "Sale" && p.originalPrice && (
+                                                <span className="text-xs font-bold px-2 py-0.5 bg-red-500 text-white rounded">
+                                                    -{discount(p.price, p.originalPrice)}%
+                                                </span>
+                                            )}
+                                            {p.badge === "New" && (
+                                                <span className="text-xs font-bold px-2 py-0.5 bg-blue-600 text-white rounded">
+                                                    New
+                                                </span>
+                                            )}
+                                            {p.stock <= 2 && (
+                                                <span className="text-xs font-bold px-2 py-0.5 bg-orange-400 text-white rounded">
+                                                    Only {p.stock} left!
+                                                </span>
+                                            )}
                                         </div>
+
+                                        <span className="absolute top-2 right-2 text-xs font-semibold px-2 py-0.5 bg-white/90 rounded text-gray-700">
+                                            {p.condition}
+                                        </span>
                                     </div>
 
                                     {/* Body */}
                                     <div className="p-4">
-                                        <h3 className="font-bold text-gray-800 text-sm">
-                                            {p.name}
-                                        </h3>
+                                        <h3 className="font-bold text-gray-800 text-sm">{p.name}</h3>
                                         <p className="text-xs text-gray-400 mb-2">{p.category}</p>
 
                                         {/* Price */}
@@ -259,12 +233,10 @@ const Dashboard = () => {
                                             {p.sizes.map((s) => (
                                                 <button
                                                     key={s}
-                                                    onClick={() =>
-                                                        setSelectedSizes((prev) => ({ ...prev, [p.id]: s }))
-                                                    }
+                                                    onClick={() => setSelectedSizes((prev) => ({ ...prev, [p.id]: s }))}
                                                     className={`text-xs px-2 py-0.5 rounded border font-medium transition-colors ${selectedSizes[p.id] === s
-                                                        ? "bg-blue-600 text-white border-blue-600"
-                                                        : "bg-gray-50 text-gray-500 border-gray-200 hover:border-blue-400"
+                                                            ? "bg-blue-600 text-white border-blue-600"
+                                                            : "bg-gray-50 text-gray-500 border-gray-200 hover:border-blue-400"
                                                         }`}
                                                 >
                                                     {s}
@@ -275,13 +247,10 @@ const Dashboard = () => {
                                         {/* Add to Cart */}
                                         <button
                                             onClick={() => handleAddToCart(p.id)}
-                                            className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-colors ${cartAdded === p.id
-                                                ? "bg-green-500 text-white"
-                                                : "bg-blue-600 hover:bg-blue-700 text-white"
-                                                }`}
+                                            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-colors bg-blue-600 hover:bg-blue-700 text-white"
                                         >
                                             <ShoppingCart size={15} />
-                                            {cartAdded === p.id ? "Added!" : "Add to Cart"}
+                                            Order via WhatsApp
                                         </button>
                                     </div>
                                 </div>
@@ -295,11 +264,7 @@ const Dashboard = () => {
                                 <p className="font-semibold text-gray-600">No products found</p>
                                 <p className="text-sm mt-1">Try a different search or filter</p>
                                 <button
-                                    onClick={() => {
-                                        setSearch("");
-                                        setCategoryFilter("All");
-                                        setConditionFilter("All");
-                                    }}
+                                    onClick={() => { setSearch(""); setCategoryFilter("All"); setConditionFilter("All"); }}
                                     className="mt-4 text-sm text-blue-600 hover:underline"
                                 >
                                     Clear all filters

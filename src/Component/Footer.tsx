@@ -1,5 +1,5 @@
 import { MessageCircle } from "lucide-react";
-import { FaInstagram, FaFacebook, FaTiktok, FaWhatsapp } from "react-icons/fa";
+import { FaInstagram, FaFacebook, FaTiktok } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const Footer = () => {
