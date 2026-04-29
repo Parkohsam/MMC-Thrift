@@ -6,6 +6,10 @@ import LoginPage from "./Pages/Login.tsx";
 import Dashboard from "./Component/Dashboard.tsx";
 import ProtectedRoute from "./Component/protectRoute.tsx";
 import Footer from "./Component/Footer.tsx";
+import AdminLogin from "./Pages/AdminLogin.tsx";
+import AdminDashboard from "./Pages/AdminDashboard.tsx";
+import AdminProtectedRoute from "./Component/AdimProtectedRoute.tsx";
+
 
 // Home page layout (Navbar + Home banner + Cards preview)
 const HomePage = () => (
@@ -30,6 +34,15 @@ const App = () => {
           <ProtectedRoute>
             <Dashboard />
           </ProtectedRoute>
+        }
+      />
+      <Route path="/admin" element={<AdminLogin />} />
+      <Route
+        path="/admin/dashboard"
+        element={
+          <AdminProtectedRoute>
+            <AdminDashboard />
+          </AdminProtectedRoute>
         }
       />
     </Routes>

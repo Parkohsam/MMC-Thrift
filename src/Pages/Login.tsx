@@ -9,12 +9,16 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
-  function handleSubmit(e: React.FormEvent) {
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const trimmedName = name.trim();
+
     const trimmedEmail = email.trim();
+
     if (!trimmedName || !trimmedEmail) return;
-    signUpUser(trimmedName, trimmedEmail);
+    
+    await signUpUser(trimmedName, trimmedEmail); 
     navigate("/dashboard");
   }
 
@@ -77,7 +81,7 @@ export default function LoginPage() {
           </form>
         </div>
       </div>
-      
+
     </div>
   );
 }
