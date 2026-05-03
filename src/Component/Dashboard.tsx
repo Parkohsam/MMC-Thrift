@@ -6,25 +6,50 @@ import {
   SlidersHorizontal,
   Heart,
 } from "lucide-react";
-import { useState, useMemo } from "react";
-import { products, type Product } from "../Data/Product";
+import { useState, useEffect, useMemo } from "react";
+import { supabase } from "../lib/Supabase";
 import LOGO1 from "../assets/LOGO1.png";
 import Footer from "./Footer";
+
+type Product = {
+  id: string;
+  name: string;
+  price: number;
+  original_price?: number;
+  image: string;
+  condition: string;
+  sizes: string[];
+  category: string;
+  badge?: string;
+  stock: number;
+};
 
 const Dashboard = () => {
   const navigate = useNavigate();
 
-  // UI state
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>(
     {},
   );
-
-  // Filter & search state
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("All");
   const [conditionFilter, setConditionFilter] = useState<string>("All");
   const [sortBy, setSortBy] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      setLoadingProducts(true);
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (!error && data) setProducts(data);
+      setLoadingProducts(false);
+    };
+    loadProducts();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("mmc_user");
@@ -38,7 +63,6 @@ const Dashboard = () => {
       alert("Please select a size first");
       return;
     }
-
     const product = products.find((p) => p.id === id);
     if (!product) return;
 
@@ -53,11 +77,12 @@ Condition: ${product.condition}
 Please confirm availability. Thank you!`;
 
     const encodedMessage = encodeURIComponent(message);
-    const whatsappURL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
-    window.open(whatsappURL, "_blank");
+    window.open(
+      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`,
+      "_blank",
+    );
   };
 
-  // Filtered + sorted products
   const filtered = useMemo(() => {
     return products
       .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
@@ -72,7 +97,7 @@ Please confirm availability. Thank you!`;
         if (sortBy === "price-desc") return b.price - a.price;
         return 0;
       });
-  }, [search, categoryFilter, conditionFilter, sortBy]);
+  }, [products, search, categoryFilter, conditionFilter, sortBy]);
 
   const discount = (price: number, original: number) =>
     Math.round(((original - price) / original) * 100);
@@ -86,7 +111,6 @@ Please confirm availability. Thank you!`;
             <Link to="/">
               <img src={LOGO1} alt="MMC Logo" className="w-25" />
             </Link>
-
             <div className="hidden sm:flex items-center font-bold gap-6 text-sm text-black">
               <button
                 onClick={() => navigate("/")}
@@ -107,15 +131,12 @@ Please confirm availability. Thank you!`;
                 Contact
               </button>
             </div>
-
-            <div className="flex items-center gap-4">
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-1 text-sm text-red-500 hover:underline"
-              >
-                <LogOut size={16} /> Log out
-              </button>
-            </div>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1 text-sm text-red-500 hover:underline"
+            >
+              <LogOut size={16} /> Log out
+            </button>
           </nav>
 
           <div className="max-w-6xl mx-auto px-6 py-8">
@@ -134,7 +155,6 @@ Please confirm availability. Thank you!`;
                   className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-200"
                 />
               </div>
-
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
@@ -144,7 +164,6 @@ Please confirm availability. Thank you!`;
                 <option value="price-asc">Price: Low to High</option>
                 <option value="price-desc">Price: High to Low</option>
               </select>
-
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className="flex items-center gap-2 border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white sm:hidden"
@@ -175,7 +194,6 @@ Please confirm availability. Thank you!`;
                   </button>
                 ))}
               </div>
-
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs text-gray-400 font-semibold uppercase tracking-wide">
                   Condition:
@@ -204,101 +222,133 @@ Please confirm availability. Thank you!`;
               products
             </p>
 
-            {/* Products Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filtered.map((p: Product) => (
-                <div
-                  key={p.id}
-                  className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group"
-                >
-                  {/* Image */}
-                  <div className="relative h-56 overflow-hidden">
-                    <img
-                      src={p.image}
-                      alt={p.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-
-                    {/* Badges */}
-                    <div className="absolute top-2 left-2 flex flex-col gap-1">
-                      <button className="text-xs font-bold px-2 py-0.5 bg-white rounded hover:bg-red-50 transition-colors">
-                        <Heart size={16} />
-                      </button>
-                    </div>
-
-                    <span className="absolute top-2 right-2 text-xs font-semibold px-2 py-0.5 bg-white/90 rounded text-gray-700">
-                      {p.condition}
-                    </span>
-                  </div>
-
-                  {/* Body */}
-                  <div className="p-4">
-                    <h3 className="font-bold text-gray-800 text-sm">
-                      {p.name}
-                    </h3>
-                    <p className="text-xs text-gray-400 mb-2">{p.category}</p>
-
-                    {/* Price */}
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="font-bold text-blue-700">
-                        ₦{p.price.toLocaleString()}
-                      </span>
-                      {p.originalPrice && (
-                        <span className="text-xs text-gray-400 line-through">
-                          ₦{p.originalPrice.toLocaleString()}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Sizes */}
-                    <div className="flex gap-1.5 flex-wrap mb-3">
-                      {p.sizes.map((s, idx) => (
-                        <button
-                          key={`${p.id}-size-${idx}`}
-                          onClick={() =>
-                            setSelectedSizes((prev) => ({ ...prev, [p.id]: s }))
-                          }
-                          className={`text-xs px-2 py-0.5 rounded border font-medium transition-colors ${
-                            selectedSizes[p.id] === s
-                              ? "bg-blue-600 text-white border-blue-600"
-                              : "bg-gray-50 text-gray-500 border-gray-200 hover:border-blue-400"
-                          }`}
-                        >
-                          {s}
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Add to Cart */}
-                    <button
-                      onClick={() => handleAddToCart(p.id)}
-                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-colors bg-blue-600 hover:bg-blue-700 text-white"
+            {/* Loading state */}
+            {loadingProducts ? (
+              <div className="text-center py-20 text-gray-400">
+                <p className="text-4xl mb-3 animate-bounce">🛍️</p>
+                <p className="font-semibold">Loading products...</p>
+              </div>
+            ) : (
+              <>
+                {/* Products Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {filtered.map((p: Product) => (
+                    <div
+                      key={p.id}
+                      className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group"
                     >
-                      <ShoppingCart size={15} />
-                      Order via WhatsApp
+                      {/* Image */}
+                      <div className="relative h-56 overflow-hidden">
+                        <img
+                          src={p.image}
+                          alt={p.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+
+                        {/* Top left — Sale/New badge only */}
+                        <div className="absolute top-2 justify-between flex flex-col gap-1">
+                          {p.badge === "Sale" && p.original_price && (
+                            <span className="text-xs font-bold px-2 py-0.5 bg-red-500 text-white rounded">
+                              -{discount(p.price, p.original_price)}%
+                            </span>
+                          )}
+                          {p.badge === "New" && (
+                            <span className="text-xs font-bold px-2 py-0.5 bg-blue-600 text-white rounded">
+                              New
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Top right — condition + heart side by side */}
+                        <div className="absolute top-2 right-2 flex items-center justify-between w-90">
+                          <span className="text-xs font-semibold px-2 py-0.5 bg-white/90 rounded text-gray-700">
+                            {p.condition}
+                          </span>
+                          <button className="bg-white rounded-full p-1.5 shadow">
+                            <Heart size={16} className="text-gray-400" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Body */}
+                      <div className="p-4">
+                        <h3 className="font-bold text-gray-800 text-sm">
+                          {p.name}
+                        </h3>
+                        <p className="text-xs text-gray-400 mb-2">
+                          {p.category}
+                        </p>
+
+                        {/* Price */}
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="font-bold text-blue-700">
+                            ₦{p.price.toLocaleString()}
+                          </span>
+                          {p.original_price && (
+                            <span className="text-xs text-gray-400 line-through">
+                              ₦{p.original_price.toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Sizes */}
+                        <div className="flex gap-1.5 flex-wrap mb-3">
+                          {[...new Set(p.sizes)].map((s, idx) => (
+                            <button
+                              key={`${p.id}-${s}-${idx}`}
+                              onClick={() =>
+                                setSelectedSizes((prev) => ({
+                                  ...prev,
+                                  [p.id]: s,
+                                }))
+                              }
+                              className={`text-xs px-2 py-0.5 rounded border font-medium transition-colors ${
+                                selectedSizes[p.id] === s
+                                  ? "bg-blue-600 text-white border-blue-600"
+                                  : "bg-gray-50 text-gray-500 border-gray-200 hover:border-blue-400"
+                              }`}
+                            >
+                              {s}
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Order Button */}
+                        <button
+                          onClick={() => handleAddToCart(p.id)}
+                          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-colors bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          <ShoppingCart size={15} />
+                          Order via WhatsApp
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Empty state */}
+                {filtered.length === 0 && (
+                  <div className="text-center py-20 text-gray-400">
+                    <p className="text-5xl mb-4">🔍</p>
+                    <p className="font-semibold text-gray-600">
+                      No products found
+                    </p>
+                    <p className="text-sm mt-1">
+                      Try a different search or filter
+                    </p>
+                    <button
+                      onClick={() => {
+                        setSearch("");
+                        setCategoryFilter("All");
+                        setConditionFilter("All");
+                      }}
+                      className="mt-4 text-sm text-blue-600 hover:underline"
+                    >
+                      Clear all filters
                     </button>
                   </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Empty state */}
-            {filtered.length === 0 && (
-              <div className="text-center py-20 text-gray-400">
-                <p className="text-5xl mb-4">🔍</p>
-                <p className="font-semibold text-gray-600">No products found</p>
-                <p className="text-sm mt-1">Try a different search or filter</p>
-                <button
-                  onClick={() => {
-                    setSearch("");
-                    setCategoryFilter("All");
-                    setConditionFilter("All");
-                  }}
-                  className="mt-4 text-sm text-blue-600 hover:underline"
-                >
-                  Clear all filters
-                </button>
-              </div>
+                )}
+              </>
             )}
           </div>
         </div>
